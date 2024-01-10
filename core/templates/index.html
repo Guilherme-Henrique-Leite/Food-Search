@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6">
+            <form autocomplete="off" action="{% url 'index' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <h1><a href="{% url 'index' %}">Food Search</a></h1>
+                    <h4>[{{ city }} {% if country %} - {{ country }} {% endif %}]</h4>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="key" placeholder="Digite um termo para busca (obrigatório)" required/>
+                    <small id="keyHelp" class="form-text text-muted">Example: Mexican Food, Brazilian Food, Asian Food</small>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="loc" placeholder="Digite uma cidade para efetuar a busca"/>
+                    <small id="keyLoc" class="form-text text-muted">Example: Vancouver, Madrid, Mexico City</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            {% if 'error' in items %}
+                <h1>Nenhum estabelecimento encontrado em {{ city }}</h1>
+            {% elif busca and items.businesses|length < 1 %}
+                <h1>Nada encontrado sobre o termo buscado</h1>
+            {% elif city and items %}
+                <h1>Resultado da Busca</h1>
+                {% for biz in items.businesses %}
+                    <span class="text-info">{{ biz.name }}, {{ city }}</span><br/>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% if city and items|length > 1 %}
+            {% include 'maps.html' %}
+        {% endif %}
+{% endblock %}
